@@ -1,4 +1,4 @@
-package de.hechler.pgpencrypter.utils;
+package de.hechler.decryptdownloader.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;

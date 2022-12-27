@@ -1,4 +1,4 @@
-package de.hechler.pgpencrypter.encrypt;
+package de.hechler.decryptdownloader;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,8 +19,8 @@ import org.pgpainless.encryption_signing.ProducerOptions;
 import org.pgpainless.util.ArmoredOutputStreamFactory;
 import org.pgpainless.util.Passphrase;
 
-import de.hechler.pgpencrypter.utils.ChecksumInputStream;
-import de.hechler.pgpencrypter.utils.ChecksumOutputStream;
+import de.hechler.decryptdownloader.utils.ChecksumInputStream;
+import de.hechler.decryptdownloader.utils.ChecksumOutputStream;
 
 public class EncrypterWithPW {
 
@@ -39,8 +39,8 @@ public class EncrypterWithPW {
 		}
 		@Override
 		public String toString() {
-			return "EncryptResult [sourceFilesize=" + sourceFilesize + ", sourceSHA256=" + sourceSHA256
-					+ ", targetFilesize=" + targetFilesize + ", targetSHA256=" + targetSHA256 + "]";
+			return "{\"sourceFilesize\":" + sourceFilesize + ",\"sourceSHA256\":\"" + sourceSHA256
+					+ "\",\"targetFilesize\":" + targetFilesize + ",\"targetSHA256\":\"" + targetSHA256 + "\"}";
 		}
 		
 	}
@@ -50,10 +50,13 @@ public class EncrypterWithPW {
 	}
 
 	public EncryptResult encrypt(Path inputFilename, Path outputFilename) {
+		return encrypt(inputFilename, outputFilename, null);
+	}
+	public EncryptResult encrypt(Path inputFilename, Path outputFilename, String comment) {
 		try {
 			try (InputStream in = new FileInputStream(inputFilename.toFile())) {
 				try (OutputStream out = new FileOutputStream(outputFilename.toFile())) {
-					return encrypt(in, out);
+					return encrypt(in, out, comment);
 				}
 			}
 		} catch (Exception e) {
@@ -64,11 +67,16 @@ public class EncrypterWithPW {
 
 	
 	public EncryptResult encrypt(InputStream plaintextInputStream, OutputStream outputStream) {
+		return encrypt(plaintextInputStream, outputStream, null);
+	}
+	public EncryptResult encrypt(InputStream plaintextInputStream, OutputStream outputStream, String comment) {
 		try {
 			ChecksumInputStream cin = new ChecksumInputStream("SHA-256", plaintextInputStream);
 			ChecksumOutputStream cout = new ChecksumOutputStream("SHA-256", outputStream);
 			
-			ArmoredOutputStreamFactory.setComment("STATIC COMMENT!");
+			if (comment != null) {
+				ArmoredOutputStreamFactory.setComment(comment);
+			}
 			
 	        EncryptionStream encryptionStream = PGPainless.encryptAndOrSign()
 	                .onOutputStream(cout)
@@ -79,8 +87,7 @@ public class EncrypterWithPW {
 	                                        // optionally override symmetric encryption algorithm
 	                                        .overrideEncryptionAlgorithm(SymmetricKeyAlgorithm.AES_256)
 	                        ).setAsciiArmor(true) // Ascii armor or not
-	                        .setComment("Comment was set in Options.")
-	                        .setComment("Second comment line to be added with\nLinebreak.")
+	                        // .setComment("Comment was set in Options.")
 	                );
 	
 	        Streams.pipeAll(cin, encryptionStream);

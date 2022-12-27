@@ -1,4 +1,4 @@
-package de.hechler.pgpencrypter.utils;
+package de.hechler.decryptdownloader.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;

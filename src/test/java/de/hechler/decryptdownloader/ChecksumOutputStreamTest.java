@@ -1,4 +1,4 @@
-package de.hechler.pgpencrypter;
+package de.hechler.decryptdownloader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import de.hechler.pgpencrypter.utils.ChecksumOutputStream;
+import de.hechler.decryptdownloader.utils.ChecksumOutputStream;
 
 class ChecksumOutputStreamTest {
 
